@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse body if it's a string
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
