@@ -21,18 +21,23 @@ export default async function handler(req, res) {
       body: JSON.stringify(body),
     })
 
-    const data = await response.json()
-    return res.status(response.status).json(data)
+    const text = await response.text()
+    console.log('Anthropic status:', response.status)
+    console.log('Anthropic response:', text.slice(0, 500))
+
+    try {
+      const data = JSON.parse(text)
+      return res.status(response.status).json(data)
+    } catch {
+      return res.status(500).json({ error: 'Invalid JSON from Anthropic', raw: text.slice(0, 300) })
+    }
 
   } catch (err) {
+    console.error('Proxy error:', err.message)
     return res.status(500).json({ error: err.message })
   }
 }
 
 export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb',
-    },
-  },
+  api: { bodyParser: { sizeLimit: '4mb' } },
 }
